@@ -182,7 +182,7 @@ database/*.db
 
 # Deployment/security hygiene
 cookies.json
-config/llm_runtime_settings.json
+config/*.json
 .runtime_home/
 .runtime-cookies/
 .playwright/
