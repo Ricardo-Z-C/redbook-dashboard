@@ -12,13 +12,25 @@ import time
 import signal
 import base64
 import sys
+import importlib.util
 
 # Put project root at import priority top to avoid third-party name collisions (e.g. cv2/config.py).
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-import config
+_LOCAL_CONFIG_INIT = os.path.join(PROJECT_ROOT, "config", "__init__.py")
+if not os.path.exists(_LOCAL_CONFIG_INIT):
+    raise RuntimeError(f"Missing project config package: {_LOCAL_CONFIG_INIT}")
+
+_config_spec = importlib.util.spec_from_file_location("config", _LOCAL_CONFIG_INIT)
+if _config_spec is None or _config_spec.loader is None:
+    raise RuntimeError("Failed to resolve project config module spec.")
+
+config = importlib.util.module_from_spec(_config_spec)
+sys.modules["config"] = config
+_config_spec.loader.exec_module(config)
+
 import textwrap
 import random
 import urllib.request
