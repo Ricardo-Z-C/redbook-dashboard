@@ -12,6 +12,12 @@ import time
 import signal
 import base64
 import sys
+
+# Put project root at import priority top to avoid third-party name collisions (e.g. cv2/config.py).
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 import config
 import textwrap
 import random
