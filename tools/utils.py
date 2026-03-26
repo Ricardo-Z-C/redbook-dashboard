@@ -22,8 +22,18 @@ import argparse
 import logging
 
 from .crawler_util import *
-from .slider_util import *
 from .time_util import *
+
+
+_LAZY_SLIDER_EXPORTS = {"Slide", "get_track_simple", "get_tracks"}
+
+
+def __getattr__(name):
+    if name in _LAZY_SLIDER_EXPORTS:
+        from . import slider_util
+
+        return getattr(slider_util, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def init_loging_config():

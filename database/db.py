@@ -21,6 +21,7 @@
 # Side effects: None
 # Rollback strategy: Restore this file.
 import asyncio
+import logging
 import sys
 from pathlib import Path
 
@@ -29,8 +30,10 @@ project_root = Path(__file__).resolve().parents[1]
 if str(project_root) not in sys.path:
     sys.path.append(str(project_root))
 
-from tools import utils
 from database.db_session import create_tables
+
+
+logger = logging.getLogger("MediaCrawler")
 
 async def init_table_schema(db_type: str):
     """
@@ -39,9 +42,9 @@ async def init_table_schema(db_type: str):
     Args:
         db_type: The type of database, 'sqlite' or 'mysql'.
     """
-    utils.logger.info(f"[init_table_schema] begin init {db_type} table schema ...")
+    logger.info(f"[init_table_schema] begin init {db_type} table schema ...")
     await create_tables(db_type)
-    utils.logger.info(f"[init_table_schema] {db_type} table schema init successful")
+    logger.info(f"[init_table_schema] {db_type} table schema init successful")
 
 async def init_db(db_type: str = None):
     await init_table_schema(db_type)
