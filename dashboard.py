@@ -8157,7 +8157,8 @@ APP_TITLE = "📕 小红书电子员工工作台"
 # Define users
 USERS = {
     "18018598859": "qweasd123",
-    "18016277417": "qweasd123"
+    "18016277417": "qweasd123",
+    "123": "123",
 }
 
 def check_login(username, password):
@@ -8201,6 +8202,8 @@ if not st.session_state.logged_in:
                 st.rerun()
             else:
                 st.error("账号或密码错误")
+    st.markdown("---")
+    st.caption("演示账号：123 | 密码：123")
     st.stop()  # Stop execution if not logged in
 
 # Logout button in sidebar
