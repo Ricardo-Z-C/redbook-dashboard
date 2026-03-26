@@ -472,6 +472,41 @@ def get_tasks_connection():
 
     return conn
 
+
+@st.cache_resource(show_spinner=False)
+def ensure_dashboard_storage_ready():
+    """Initialize storage on first boot so cloud deployments can start from an empty disk."""
+    os.makedirs(DATABASE_DIR, exist_ok=True)
+    os.makedirs(CONFIG_DIR, exist_ok=True)
+
+    from database.db import init_db as init_orm_db
+
+    try:
+        asyncio.run(init_orm_db("sqlite"))
+    except RuntimeError as exc:
+        if "asyncio.run() cannot be called from a running event loop" not in str(exc):
+            raise
+        loop = asyncio.new_event_loop()
+        try:
+            loop.run_until_complete(init_orm_db("sqlite"))
+        finally:
+            loop.close()
+
+    conn = get_tasks_connection()
+    conn.close()
+    return {
+        "db_path": DB_PATH,
+        "tasks_db_path": TASKS_DB_PATH,
+    }
+
+
+try:
+    ensure_dashboard_storage_ready()
+except Exception as exc:
+    st.error("系统初始化失败，暂时无法加载工作台。")
+    st.exception(exc)
+    st.stop()
+
 def delete_task(task_id):
     conn = get_tasks_connection()
     conn.execute("DELETE FROM crawler_tasks WHERE id = ?", (task_id,))
